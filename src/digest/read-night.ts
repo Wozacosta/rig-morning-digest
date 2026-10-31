@@ -2,9 +2,9 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { DigestRow, JobStatus, ReadNight } from './types.js';
 
-type Line = { at: string; job: string; status: JobStatus; owner: string | null; error: string | null };
+export type Line = { at: string; job: string; status: JobStatus; owner: string | null; error: string | null };
 
-function isRealDate(night: string): boolean {
+export function isRealDate(night: string): boolean {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(night);
   if (!match) return false;
   const [year, month, day] = match.slice(1).map(Number);
@@ -29,6 +29,19 @@ function parseLine(text: string): Line | null {
   if (!isStatus(status)) return null;
   if (typeof owner !== 'string' && owner !== null) return null;
   return { at, job, status, owner, error: typeof error === 'string' ? error : null };
+}
+
+// Shared by the reader and the counter so they cannot disagree on what a line is.
+export function parseLines(text: string): { lines: Line[]; badLines: number } {
+  const lines: Line[] = [];
+  let badLines = 0;
+  for (const raw of text.split('\n')) {
+    if (!raw.trim()) continue;
+    const line = parseLine(raw);
+    if (line) lines.push(line);
+    else badLines += 1;
+  }
+  return { lines, badLines };
 }
 
 function addLine(row: DigestRow | undefined, line: Line): DigestRow {
@@ -56,13 +69,8 @@ export const readNight: ReadNight = (runsDir, night) => {
   }
 
   const rows = new Map<string, DigestRow>();
-  let badLines = 0;
-  for (const raw of text.split('\n')) {
-    if (!raw.trim()) continue;
-    const line = parseLine(raw);
-    if (line) rows.set(line.job, addLine(rows.get(line.job), line));
-    else badLines += 1;
-  }
+  const { lines, badLines } = parseLines(text);
+  for (const line of lines) rows.set(line.job, addLine(rows.get(line.job), line));
 
   return {
     found: true,
