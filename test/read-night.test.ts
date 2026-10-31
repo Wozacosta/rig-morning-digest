@@ -178,7 +178,7 @@ describe('readNight', () => {
       owner: null,
       runs: 4,
       retries: 1,
-      fails: 1,
+      fails: 2,
       lastStatus: 'retry',
       lastError: 'second',
       firstAt: '2026-10-30T05:00:00+01:00',
