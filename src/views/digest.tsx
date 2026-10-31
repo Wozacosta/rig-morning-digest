@@ -25,7 +25,7 @@ export function DigestPage({ night, rows, badLines }: { night: string; rows: Dig
           </thead>
           <tbody>
             {rows.map((r) => (
-              <tr class={r.retries >= 3 || r.lastStatus === 'fail' ? 'warn' : undefined}>
+              <tr class={r.retries >= 3 || r.fails > 0 ? 'warn' : undefined}>
                 <td>{r.job || dash}</td>
                 <td>{r.owner ?? dash}</td>
                 <td>{r.runs}</td>

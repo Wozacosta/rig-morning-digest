@@ -5,7 +5,8 @@ export type DigestRow = {
   job: string;
   owner: string | null; // from the job's last line; null stays null, the view renders it as —
   runs: number; // every parsed line of the job
-  retries: number; // lines with status retry
+  retries: number;
+  fails: number; // lines with status retry
   lastStatus: JobStatus;
   lastError: string | null; // most recent error on the job, even if a later line was ok
   firstAt: string; // first line in log order

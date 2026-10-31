@@ -125,4 +125,10 @@ describe('GET /api/digest/:night', () => {
     expect(render?.owner).toBeNull();
     expect(json.rows.find((r) => r.job === 'lane/sync')?.owner).toBe('rook');
   });
+
+  it('marks a job that failed, even when its last line was ok', async () => {
+    writeFileSync(join(runsDir, '2026-10-26.jsonl'), [line({ status: 'fail' }), line({})].join('\n'));
+    const html = await (await app.request('/digest/2026-10-26')).text();
+    expect(html).toContain('<tr class="warn">');
+  });
 });

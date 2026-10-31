@@ -51,6 +51,7 @@ function addLine(row: DigestRow | undefined, line: Line): DigestRow {
     owner: line.owner,
     runs: (row?.runs ?? 0) + 1,
     retries: (row?.retries ?? 0) + retry,
+    fails: (row?.fails ?? 0) + (line.status === 'fail' ? 1 : 0),
     lastStatus: line.status,
     lastError: line.error ?? row?.lastError ?? null,
     firstAt: row?.firstAt ?? line.at,
